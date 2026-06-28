@@ -1,0 +1,47 @@
+name: CI/CD Pipeline (extended)
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js (with cache)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Show Node version
+        run: node -v
+
+      - name: Run application
+        run: node index.js
+
+      - name: Save build output
+        run: echo "Build finished at $(date)" > build.txt
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-info
+          path: build.txt
+
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy simulation
+        run: |
+          echo "Deployment started..."
+          echo "Deploy successful ✔"
